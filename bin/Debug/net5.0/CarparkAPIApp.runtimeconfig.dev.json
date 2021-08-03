@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "/Users/khaizon/.dotnet/store/|arch|/|tfm|",
+      "/Users/khaizon/.nuget/packages"
+    ]
+  }
+}
