@@ -7,7 +7,6 @@ namespace CarparkAPIApp.Data
 {
     public class ApiDbContext : IdentityDbContext<UserModel>
     {
-        public virtual DbSet<CarparkData> Carparks {get; set;}
 
         public ApiDbContext(DbContextOptions<ApiDbContext> options)
             : base(options)

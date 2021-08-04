@@ -36,11 +36,11 @@ namespace CarparkAPIApp
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
 
-            services.AddDbContext<ApiDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")
+            services.AddDbContext<ApiDbContext>(DbContextOptions =>
+                DbContextOptions.UseMySql(
+                    Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 25))
                 ));
-            
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,6 +72,7 @@ namespace CarparkAPIApp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarparkAPIApp", Version = "v1" });
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,6 +95,10 @@ namespace CarparkAPIApp
             {
                 endpoints.MapControllers();
             });
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            using (var context = scope.ServiceProvider.GetService<ApiDbContext>())
+                context.Database.Migrate();
         }
     }
 }

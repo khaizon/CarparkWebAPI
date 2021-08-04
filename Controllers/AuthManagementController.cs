@@ -124,19 +124,44 @@ namespace CarparkAPIApp.Controllers
 
                 var jwtToken = GenerateJwtToken(existingUser);
 
-                return Ok(new RegistrationResponse() {
+                return Ok(new RegistrationResponse()
+                {
                     Success = true,
                     Token = jwtToken
                 });
             }
 
             return BadRequest(new RegistrationResponse()
-                    {
-                        Errors = new List<string>() {
+            {
+                Errors = new List<string>() {
                             "Invalid Payload"
                         },
-                        Success = false
-                    });
+                Success = false
+            });
+        }
+
+        [HttpGet]
+        [Route("GetDetails")]
+        public async Task<IActionResult> GetDetails()
+        {
+
+            var email = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            Console.WriteLine(currentUser);
+            Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (currentUser == null)
+            {
+                return BadRequest(new RegistrationResponse()
+                {
+                    Errors = new List<string>() {
+                            "Something went wrong"
+                        },
+                    Success = false
+                });
+            }
+
+            return Ok(currentUser);
         }
 
         private string GenerateJwtToken(UserModel user)

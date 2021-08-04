@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarparkAPIApp.Controllers
 {
-    
+
 
     [Route("api/[controller]")]
     [ApiController]
@@ -26,16 +26,18 @@ namespace CarparkAPIApp.Controllers
         public CarparkController(ApiDbContext context)
         {
             _context = context;
+            if (client.BaseAddress == null)
+            {
+                client.BaseAddress = new Uri("https://localhost:5001/api/carpark");
+            }
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCarparks()
         {
-            client.BaseAddress = new Uri("https://localhost:5001/api/carpark");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-
             CarparkData carparkData = null;
             HttpResponseMessage response = await client.GetAsync("https://api.data.gov.sg/v1/transport/carpark-availability");
             if (response.IsSuccessStatusCode)
