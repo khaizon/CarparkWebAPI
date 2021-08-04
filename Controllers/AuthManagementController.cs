@@ -9,6 +9,8 @@ using CarparkAPIApp.Configuration;
 using CarparkAPIApp.Models;
 using CarparkAPIApp.Models.DTOs.Requests;
 using CarparkAPIApp.Models.DTOs.Responses;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -142,13 +144,15 @@ namespace CarparkAPIApp.Controllers
 
         [HttpGet]
         [Route("GetDetails")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
         public async Task<IActionResult> GetDetails()
         {
 
             var email = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var currentUser = await _userManager.FindByEmailAsync(email);
-            
+
             if (currentUser == null)
             {
                 return BadRequest(new RegistrationResponse()
