@@ -1,6 +1,7 @@
 ## Getting Started
 >
-> 1. Clone Repository: `git clone https://github.com/khaizon/CarparkWebAPI.git`
+> 1. Clone Repository:  
+`git clone https://github.com/khaizon/CarparkWebAPI.git`
 > 2. Change MySQL connection settings in /CarparkAPIApp.csproj:  
 `{
   "ConnectionStrings": {
