@@ -148,8 +148,7 @@ namespace CarparkAPIApp.Controllers
             var email = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var currentUser = await _userManager.FindByEmailAsync(email);
-            Console.WriteLine(currentUser);
-            Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            
             if (currentUser == null)
             {
                 return BadRequest(new RegistrationResponse()
