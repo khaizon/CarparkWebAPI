@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CarparkAPIApp.Data;
 using CarparkAPIApp.Models;
@@ -9,12 +12,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarparkAPIApp.Controllers
 {
+    
+
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CarparkController : ControllerBase
     {
         private readonly ApiDbContext _context;
+        static HttpClient client = new HttpClient();
+
 
         public CarparkController(ApiDbContext context)
         {
@@ -24,34 +31,18 @@ namespace CarparkAPIApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCarparks()
         {
-            var carparks = await _context.Carparks.ToListAsync();
+            client.BaseAddress = new Uri("https://localhost:5001/api/carpark");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
 
-            return Ok(carparks);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateCarpark(CarparkData data)
-        {
-            if (ModelState.IsValid)
+            CarparkData carparkData = null;
+            HttpResponseMessage response = await client.GetAsync("https://api.data.gov.sg/v1/transport/carpark-availability");
+            if (response.IsSuccessStatusCode)
             {
-                await _context.Carparks.AddAsync(data);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("GetCarpark", new { data.ID }, data);
+                carparkData = await response.Content.ReadAsAsync<CarparkData>();
             }
-
-            return new JsonResult("Something went wrong") { StatusCode = 500 };
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCarpark(int id)
-        {
-            var carpark = await _context.Carparks.FirstOrDefaultAsync(x => x.ID == id);
-
-            if(carpark ==null)
-                return NotFound();
-
-            return Ok(carpark);
+            return Ok(carparkData);
         }
     }
 }
